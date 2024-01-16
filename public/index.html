@@ -4,115 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
-        integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
-        crossorigin="anonymous" />
     <link rel="stylesheet" href="style.css" />
-    <title>Chat app</title>
+    <title>Misterium Prototype</title>
 </head>
 
 <body>
-    <h1 class="title">Chat Aplication</h1>
-    <div class="main">
-        <div class="name">
-            <span><i class="far fa-user"></i></span>
-            <input type="text" id="name-input" class="name-input" value="anonymous" maxlength="20" />
-        </div>
-
-        <ul class="message-container" id="message-container">
-        </ul>
-
-        <form class="message-form" id="message-form">
-            <input type="text" name="message" id="message-input" class="message-input" />
-            <div class="v-divider"></div>
-            <button type="submit" class="send-button">
-                send <span><i class="fas fa-paper-plane"></i></span>
-            </button>
-        </form>
-    </div>
-    <h3 class="clients-total" id="client-total">Total clients: <span class="total-clients"></span></h3>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-        socket.on('clients-total', (data) => {
-            document.querySelector('.total-clients').innerHTML = `${data}`
-        })
-        const messageContainer = document.getElementById('message-container')
-        const nameInput = document.getElementById('name-input')
-        const messageForm = document.getElementById('message-form')
-        const messageInput = document.getElementById('message-input')
-
-        messageForm.addEventListener('submit', (e) => {
-            e.preventDefault()
-            sendMessage()
-        })
-
-        const sendMessage = () => {
-            if (messageInput.value === '') return
-            const data = {
-                name: nameInput.value,
-                message: messageInput.value,
-                date: new Date()
-            }
-            socket.emit('incoming-message', data)
-            addMessageToUI(true, data)
-            messageInput.value = ''
-        }
-
-        socket.on('chat-message', (data) => {
-            addMessageToUI(false, data)
-        })
-
-        const addMessageToUI = (isOwnMessage, data) => {
-            clearFeedback()
-            const element = `
-      <li class="${isOwnMessage ? 'message-right' : 'message-left'}">
-          <p class="message">
-            ${data.message}
-          </p>
-          <span> ● ${data.name}</span>
-        </li>
-        `
-
-            messageContainer.innerHTML += element
-            scrollToBottom()
-        }
-        function scrollToBottom() {
-            messageContainer.scrollTo(0, messageContainer.scrollHeight)
-        }
-        function clearFeedback() {
-            document.querySelectorAll('li.message-feedback').forEach((element) => {
-                element.parentNode.removeChild(element)
-            })
-        }
-
-        messageInput.addEventListener('focus', (e) => {
-            socket.emit('feedback', {
-                feedback: `✍️ ${nameInput.value} is typing a message`,
-            })
-        })
-
-        messageInput.addEventListener('keypress', (e) => {
-            socket.emit('feedback', {
-                feedback: `✍️ ${nameInput.value} is typing a message`,
-            })
-        })
-        messageInput.addEventListener('blur', (e) => {
-            socket.emit('feedback', {
-                feedback: '',
-            })
-        })
-        socket.on('feedback', (data) => {
-            clearFeedback()
-            const element = `
-        <li class="message-feedback">
-          <p class="feedback" id="feedback">${data.feedback}</p>
-        </li>
-  `
-            messageContainer.innerHTML += element
-        })
-
-    </script>
+    <script src="app.js"></script>
 </body>
 
 </html>
